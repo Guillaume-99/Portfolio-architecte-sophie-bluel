@@ -1,7 +1,36 @@
+// appel API categories
+const apiCategories = 'http://localhost:5678/api/categories';
+
+// appel API categories pour conversion en json
+async function getCategories() {
+    const response = await fetch(apiCategories);
+    const categories = await response.json();
+    return categories;
+}
+
+// affichage de boutton tous et filtres par categories
+async function displayCategories() {
+    const categories = await getCategories();
+    const filters = document.querySelector('.filters');
+    categories.forEach(category => {
+        const button = document.createElement('button');
+        button.textContent = category.name;
+        button.setAttribute('data-id', category.id);
+        filters.appendChild(button);
+    });
+}
+
+// appel de la fonction d'affichage categories
+displayCategories();
+
+
+
+
+
 // appel API travaux
 const api = 'http://localhost:5678/api/works';
 
-// appel API pour conversion en json
+// appel API travaux pour conversion en json
 async function getWorks() {
     const response = await fetch(api);
     const works = await response.json();
