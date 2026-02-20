@@ -8,23 +8,53 @@ async function getCategories() {
     return categories;
 }
 
-// affichage de boutton tous et filtres par categories
+// affichage de bouttons filtres par categories
 async function displayCategories() {
     const categories = await getCategories();
     const filters = document.querySelector('.filters');
     categories.forEach(category => {
         const button = document.createElement('button');
         button.textContent = category.name;
-        button.setAttribute('data-id', category.id);
+        button.setAttribute('data-category', category.id);
+        button.classList.add('filtersBtn');
         filters.appendChild(button);
     });
+
+    const buttons = document.querySelectorAll('.filtersBtn');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+
+    // appel des filtres
+    worksFilters()
 }
 
-// appel de la fonction d'affichage categories
-displayCategories();
 
+function worksFilters() {
+    // filtres des travaux par categories
+    const buttons = document.querySelectorAll('.filtersBtn');
 
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
 
+            const category = button.getAttribute('data-category');
+            const works = document.querySelectorAll('.works');
+
+            works.forEach(work => {
+                if (category === '0') {
+                    work.style.display = 'block';
+                } else if (work.classList.contains(category)) {
+                    work.style.display = 'block';
+                } else {
+                    work.style.display = 'none';
+                }
+            });
+        });
+    });
+}
 
 
 // appel API travaux
@@ -45,6 +75,8 @@ async function displayWorks() {
         const figure = document.createElement('figure');
         const img = document.createElement('img');
         const title = document.createElement('figcaption');
+        figure.classList.add(work.categoryId);
+        figure.classList.add('works');
         img.src = work.imageUrl;
         img.alt = work.title;
         title.textContent = work.title;
@@ -54,5 +86,17 @@ async function displayWorks() {
     });
 }
 
-// appel de la fonction d'affichage travaux
-displayWorks();
+
+
+
+
+
+async function init() {
+    // appel de la fonction d'affichage categories
+    displayCategories();
+    // appel de la fonction d'affichage travaux
+    displayWorks();
+
+}
+
+init();
