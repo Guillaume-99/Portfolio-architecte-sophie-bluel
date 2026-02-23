@@ -88,6 +88,59 @@ async function displayWorks() {
 
 
 
+//appel API login
+const apiLogin = 'http://localhost:5678/api/users/login';
+
+// appel API login pour conversion en json
+async function login(email, password) {
+    const response = await fetch(apiLogin, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+        alert('Email ou mot de passe incorrect');
+        return;
+    }
+
+    const data = await response.json();
+    return data;
+}
+
+// Récupérer le formulaire et envoyer le submit
+const form = document.querySelector('.login_page form');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    const data = await login(email, password);
+
+    localStorage.setItem('token', data.token);
+    loginPage();
+
+});
+
+
+
+
+// Suppresion de la page de login SI valide
+async function loginPage() {
+    const loginPage = document.querySelector('.login');
+    loginPage.classList.add('hidden');
+    const main = document.querySelector('main');
+    main.classList.remove('hidden');
+
+}
+
+
+
 
 
 
@@ -96,6 +149,7 @@ async function init() {
     displayCategories();
     // appel de la fonction d'affichage travaux
     displayWorks();
+    // appel de la fonction d'affichage login
 
 }
 
