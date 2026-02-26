@@ -88,9 +88,45 @@ async function displayWorks() {
 
 
 
+// mode admin lorsque le token est donné
+async function admin() {
+    if (localStorage.getItem('token')) {
+        // affichage du bouton logout
+        const logout = `<a id="logout" href="index.html">logout</a>`;
+        const login = document.getElementById('login');
+        login.innerHTML = logout;
+
+        document.getElementById('logout').addEventListener('click', () => {
+            localStorage.removeItem('token');
+        });
+
+
+        // affichage bandeau mode édition
+        const edit = document.querySelector('.edit_banner');
+        edit.classList.remove('hidden');
+        edit.classList.add('edit');
+
+        // modification header
+        const header = document.querySelector('header');
+        header.classList.add('edit_mod');
+
+        // affichage boutton modif
+        const linkModify = document.querySelector('.link_modify');
+        linkModify.classList.remove('hidden');
+
+        // masquer boutton filtres
+        const filters = document.querySelector('.filters');
+        filters.classList.add('hidden');
+
+        // augmentation margin gallery
+        const gallery = document.querySelector('.gallery');
+        gallery.classList.add('edit_mod');
 
 
 
+    }
+
+}
 
 
 
@@ -106,6 +142,8 @@ async function init() {
     displayCategories();
     // appel de la fonction d'affichage travaux
     displayWorks();
+
+    admin();
 }
 
 init();

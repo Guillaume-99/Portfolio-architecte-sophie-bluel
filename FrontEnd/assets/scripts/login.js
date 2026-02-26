@@ -51,9 +51,10 @@ async function checkLogin() {
         window.location.href = 'index.html';
     });
 }
-
-
-
-
 // appel de la fonction de check login
 checkLogin();
+
+
+
+
+
