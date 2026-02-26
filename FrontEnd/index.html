@@ -37,7 +37,10 @@
 				<input type="email" name="email" id="email">
 				<label for="password">Mot de passe</label>
 				<input type="password" name="password" id="password">
-				<input type="submit" value="Se connecter">
+				<span id="error" class="hidden">
+					<p>Erreur: E-mail ou Mot de passe incorrect</p>
+				</span>
+				<input id="connecter" type="submit" value="Se connecter">
 				<a href="#">Mot de passe oublié</a>
 			</form>
 		</span>

@@ -1,9 +1,14 @@
-// appel API categories
-const apiCategories = 'http://localhost:5678/api/categories';
+// appel API 
+const apiUrl = 'http://localhost:5678/api/';
+
+
+
+
+
 
 // appel API categories pour conversion en json
 async function getCategories() {
-    const response = await fetch(apiCategories);
+    const response = await fetch(apiUrl + 'categories');
     const categories = await response.json();
     return categories;
 }
@@ -20,13 +25,6 @@ async function displayCategories() {
         filters.appendChild(button);
     });
 
-    const buttons = document.querySelectorAll('.filtersBtn');
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            buttons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-        });
-    });
 
     // appel des filtres
     worksFilters()
@@ -43,6 +41,9 @@ function worksFilters() {
             const category = button.getAttribute('data-category');
             const works = document.querySelectorAll('.works');
 
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
             works.forEach(work => {
                 if (category === '0') {
                     work.style.display = 'block';
@@ -57,12 +58,11 @@ function worksFilters() {
 }
 
 
-// appel API travaux
-const api = 'http://localhost:5678/api/works';
+
 
 // appel API travaux pour conversion en json
 async function getWorks() {
-    const response = await fetch(api);
+    const response = await fetch(apiUrl + 'works');
     const works = await response.json();
     return works;
 }
@@ -88,12 +88,11 @@ async function displayWorks() {
 
 
 
-//appel API login
-const apiLogin = 'http://localhost:5678/api/users/login';
 
 // appel API login pour conversion en json
 async function login(email, password) {
-    const response = await fetch(apiLogin, {
+
+    const response = await fetch(apiUrl + 'users/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -101,31 +100,45 @@ async function login(email, password) {
         body: JSON.stringify({ email, password })
     });
 
+
+
+
     if (!response.ok) {
-        alert('Email ou mot de passe incorrect');
-        return;
+        const error = document.querySelector('span.hidden');
+        error.classList.remove('hidden');
+        return
     }
 
     const data = await response.json();
     return data;
+
 }
 
+
 // Récupérer le formulaire et envoyer le submit
-const form = document.querySelector('.login_page form');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
 
-form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+async function checkLogin() {
+    const form = document.querySelector('.login_page form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
 
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    const data = await login(email, password);
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    localStorage.setItem('token', data.token);
-    loginPage();
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const data = await login(email, password);
 
-});
+        if (!data) {
+            return;
+        }
+
+        localStorage.setItem('token', data.token);
+        loginPage();
+
+    });
+}
+
 
 
 
@@ -149,8 +162,8 @@ async function init() {
     displayCategories();
     // appel de la fonction d'affichage travaux
     displayWorks();
-    // appel de la fonction d'affichage login
-
+    // appel de la fonction de check login
+    checkLogin();
 }
 
 init();
