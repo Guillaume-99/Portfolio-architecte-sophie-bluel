@@ -122,11 +122,45 @@ async function admin() {
         const gallery = document.querySelector('.gallery');
         gallery.classList.add('edit_mod');
 
+        // click modifier => affichage modale
+        const works = await getWorks();
+        linkModify.addEventListener('click', () => {
+            const modalepop = document.querySelector('.modalePop');
+            const galleryImg = document.querySelector('.galleryImg');
+
+            works.forEach(work => {
+                const img = document.createElement('img');
+                img.src = work.imageUrl;
+                img.alt = work.title;
+                img.classList.add('modaleImg');
+                galleryImg.appendChild(img);
+            });
+
+            modalepop.classList.remove('hidden');
+            modalepop.classList.add('modale');
 
 
-    }
+        });
+
+        // fermeture modale
+        const close = document.querySelector('.close');
+        close.addEventListener('click', () => {
+
+            const modalepop = document.querySelector('.modalePop');
+            modalepop.classList.remove('modale');
+            modalepop.classList.add('hidden');
+
+        })
+
+
+
+
+
+    };
 
 }
+
+
 
 
 
