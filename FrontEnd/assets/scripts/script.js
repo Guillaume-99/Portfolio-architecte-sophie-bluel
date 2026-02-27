@@ -123,47 +123,57 @@ async function admin() {
         gallery.classList.add('edit_mod');
 
         // click modifier => affichage modale
-        const works = await getWorks();
         linkModify.addEventListener('click', () => {
             const modalepop = document.querySelector('.modalePop');
-            const galleryImg = document.querySelector('.galleryImg');
-
-            works.forEach(work => {
-                const img = document.createElement('img');
-                img.src = work.imageUrl;
-                img.alt = work.title;
-                img.classList.add('modaleImg');
-                galleryImg.appendChild(img);
-            });
 
             modalepop.classList.remove('hidden');
             modalepop.classList.add('modale');
-
-
         });
-
-        // fermeture modale
-        const close = document.querySelector('.close');
-        close.addEventListener('click', () => {
-
-            const modalepop = document.querySelector('.modalePop');
-            modalepop.classList.remove('modale');
-            modalepop.classList.add('hidden');
-
-        })
-
-
 
 
 
     };
 
+};
+
+// affichage modale
+async function modale() {
+
+    const works = await getWorks();
+    const galleryImg = document.querySelector('.galleryImg');
+
+
+
+    //Image pour fenetre modale
+    works.forEach(work => {
+        const deleteIcon = document.createElement('i');
+        deleteIcon.className = 'fa-solid fa-trash-can trash';
+        const img = document.createElement('img');
+        const figure = document.createElement('figure');
+        img.src = work.imageUrl;
+        img.alt = work.title;
+        img.classList.add('modaleImg');
+        figure.appendChild(deleteIcon);
+        figure.appendChild(img);
+        galleryImg.appendChild(figure);
+    });
+
+    // fermeture modale sur croix ou overlay
+    const modalepop = document.querySelector('.modalePop');
+
+    modalepop.addEventListener('click', (event) => {
+
+        if (event.target === modalepop || event.target.closest('.close')) {
+
+            modalepop.classList.remove('modale');
+            modalepop.classList.add('hidden');
+        }
+
+    });
+
+
+
 }
-
-
-
-
-
 
 
 
@@ -178,6 +188,7 @@ async function init() {
     displayWorks();
 
     admin();
+    modale();
 }
 
 init();
