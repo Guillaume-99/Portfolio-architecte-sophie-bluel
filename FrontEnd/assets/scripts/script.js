@@ -2,10 +2,6 @@
 const apiUrl = 'http://localhost:5678/api/';
 
 
-
-
-
-
 // appel API categories pour conversion en json
 async function getCategories() {
     const response = await fetch(apiUrl + 'categories');
@@ -125,9 +121,11 @@ async function admin() {
         // click modifier => affichage modale
         linkModify.addEventListener('click', () => {
             const modalepop = document.querySelector('.modalePop');
+            const modaleGallery = document.querySelector('.modale_gallery');
 
             modalepop.classList.remove('hidden');
             modalepop.classList.add('modale');
+            modaleGallery.classList.add('activeModale');
         });
 
 
@@ -136,7 +134,9 @@ async function admin() {
 
 };
 
-// affichage modale
+
+
+// affichage modale Gallery
 async function modale() {
 
     const works = await getWorks();
@@ -144,7 +144,7 @@ async function modale() {
 
 
 
-    //Image pour fenetre modale
+    //Image pour modale gallery
     works.forEach(work => {
         const deleteIcon = document.createElement('i');
         deleteIcon.className = 'fa-solid fa-trash-can trash';
@@ -158,23 +158,51 @@ async function modale() {
         galleryImg.appendChild(figure);
     });
 
-    // fermeture modale sur croix ou overlay
+    // fermeture modale sur croix ou overlay + retour arriere
     const modalepop = document.querySelector('.modalePop');
+    const modaleGallery = document.querySelector('.modale_gallery');
+    const modaleWorks = document.querySelector('.modale_works');
+    const back = document.querySelector('.back');
 
     modalepop.addEventListener('click', (event) => {
 
         if (event.target === modalepop || event.target.closest('.close')) {
+            console.log(event.target);
 
             modalepop.classList.remove('modale');
             modalepop.classList.add('hidden');
+            modaleWorks.classList.remove('activeModale');
+        } // retour arriere
+        else if (event.target === back) {
+            modaleGallery.classList.add('activeModale');
+            modaleWorks.classList.remove('activeModale');
         }
 
     });
+    // affichage modale form works
+    const addPicture = document.querySelector('.addPicture');
+    addPicture.addEventListener('click', () => {
+        modaleGallery.classList.remove('activeModale');
+        modaleGallery.classList.add('hidden');
+        modaleWorks.classList.add('activeModale');
+    });
 
-
+    modaleWorksCategory();
 
 }
 
+
+// function modale form works category
+async function modaleWorksCategory() {
+    const category = await getCategories();
+    const categorySelect = document.querySelector('.categorySelect');
+    category.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        categorySelect.appendChild(option);
+    });
+}
 
 
 

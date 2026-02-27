@@ -365,7 +365,7 @@ nav li a {
 	z-index: 900;
 }
 
-.modale_window {
+.activeModale {
 	position: relative;
 	width: 600px;
 	height: 630px;
@@ -383,6 +383,15 @@ nav li a {
 	top: 25px;
 	right: 30px;
 	cursor: pointer;
+	font-size: 15px;
+}
+
+.back {
+	position: absolute;
+	top: 25px;
+	left: 30px;
+	cursor: pointer;
+	font-size: 21px;
 }
 
 .titleModale {
@@ -400,6 +409,8 @@ nav li a {
 	align-items: center;
 	flex-wrap: wrap;
 	gap: 15px;
+	border-bottom: #B3B3B3 solid 1px;
+	padding-bottom: 50px;
 }
 
 .galleryImg figure {
@@ -431,10 +442,10 @@ nav li a {
 }
 
 .crossLine {
-	width: 73%;
+	width: 50vh;
 	height: 1px;
 	background-color: #B3B3B3;
-	margin-top: 60px;
+	margin-top: 40px;
 
 }
 
@@ -450,6 +461,69 @@ nav li a {
 	cursor: pointer;
 	position: absolute;
 	bottom: 40px;
+}
+
+/************************Modale form**********************/
+
+.picture {
+	position: absolute;
+	top: 120px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 50vh;
+	height: 12em;
+	background-color: #E8F1F6;
+	border-radius: 10px;
+}
+
+.picture i {
+	margin: 20px 0 10px 0;
+	font-size: 70px;
+	color: #B9C5CC;
+}
+
+.picture button {
+	width: 170px;
+	height: 36px;
+	background-color: #CBD6DC;
+	color: #306685;
+	font-weight: 500;
+	border-radius: 60px;
+	border: none;
+	cursor: pointer;
+	margin-bottom: 10px;
+}
+
+.picture p {
+	font-size: 10px;
+}
+
+.addWorks {
+	position: absolute;
+	bottom: 0px;
+	display: flex;
+	flex-direction: column;
+}
+
+.addWorks label {
+	margin: 20px 0 5px 0;
+}
+
+.addWorks #name,
+.addWorks select {
+	margin-top: 10px;
+	width: 50vh;
+	height: 50px;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+	border: none;
+}
+
+#valider {
+	height: 30px;
+	width: 25vh;
+	background-color: #A7A7A7;
+	border: none;
 }
 
 /*************************************************/
