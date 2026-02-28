@@ -35,7 +35,7 @@ function worksFilters() {
         button.addEventListener('click', () => {
 
             const category = button.getAttribute('data-category');
-            const works = document.querySelectorAll('.works');
+            const works = document.querySelectorAll('.gallery figure');
 
             buttons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
