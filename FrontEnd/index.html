@@ -76,7 +76,7 @@
 					<i class="fa-solid fa-x close"></i>
 					<h2 class="titleModale">Galerie photo</h2>
 					<div class="galleryImg"></div>
-					<button class="addPicture">Ajouter une photo</button>
+					<button class="formWorks">Ajouter une photo</button>
 				</div>
 
 				<div class="modale_works hidden">
@@ -87,18 +87,20 @@
 					<h2 class="titleModale">Ajout photo</h2>
 					<div class="picture">
 						<i class="fa-regular fa-image"></i>
-						<button>+ Ajouter une photo</button>
+						<button class="addPicture">+ Ajouter une photo</button>
 						<p>jpg, png : 4mo max</p>
 					</div>
 					<form class="addWorks" action="#" method="post">
-						<label for="name">Titre</label>
-						<input type="text" name="name" id="name">
+						<label for="title">Titre</label>
+						<input type="text" name="title" id="title">
 						<label for="category">Catégorie</label>
 						<select class="categorySelect" name="category" id="category">
 							<option>---</option>
 						</select>
 						<div class="crossLine"></div>
+						<p class="error hidden">Veuillez remplir tous les champs</p>
 						<input id="valider" type="submit" value="Valider">
+
 					</form>
 				</div>
 

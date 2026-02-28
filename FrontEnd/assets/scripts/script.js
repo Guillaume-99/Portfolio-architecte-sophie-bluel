@@ -162,26 +162,7 @@ async function modale() {
         galleryImg.appendChild(figure);
     });
 
-
-    // affichage modale form works
-    const modaleGallery = document.querySelector('.modale_gallery');
-    const modaleWorks = document.querySelector('.modale_works');
-    const addPicture = document.querySelector('.addPicture');
-    addPicture.addEventListener('click', () => {
-        modaleGallery.classList.remove('activeModale');
-        modaleGallery.classList.add('hidden');
-        modaleWorks.classList.add('activeModale');
-    });
-
-
-    modaleWorksCategory();
-    closeModale();
-    deleteWork();
-}
-
-
-// function modale form works category
-async function modaleWorksCategory() {
+    // modale form works category
     const category = await getCategories();
     const categorySelect = document.querySelector('.categorySelect');
     category.forEach(cat => {
@@ -190,10 +171,51 @@ async function modaleWorksCategory() {
         option.textContent = cat.name;
         categorySelect.appendChild(option);
     });
+
+
+
+    modaleFormWorks();
+    closeModale();
+    deleteWork();
+    addWork();
+
+    title.addEventListener('input', modaleFormWorks);
+    categorySelect.addEventListener('change', modaleFormWorks);
 }
 
+//function modale form works
+function modaleFormWorks() {
+    // affichage modale form works
+    const modaleGallery = document.querySelector('.modale_gallery');
+    const modaleWorks = document.querySelector('.modale_works');
+    const formWorks = document.querySelector('.formWorks');
+    formWorks.addEventListener('click', () => {
+        modaleGallery.classList.remove('activeModale');
+        modaleGallery.classList.add('hidden');
+        modaleWorks.classList.add('activeModale');
+    });
+
+
+    // Boutton valider vert si remplie
+    const title = document.getElementById('title').value;
+    const category = document.getElementById('category').value;
+    const picture = document.querySelector('.picture img');
+
+    const isValide = title && category && picture;
+    if (isValide) {
+        let valider = document.getElementById('valider');
+        valider.style.backgroundColor = '#306685';
+    } else {
+        let valider = document.getElementById('valider');
+        valider.style.backgroundColor = '#A7A7A7';
+    }
+
+}
+
+
+// fermeture modale sur croix ou overlay + retour arriere
 function closeModale() {
-    // fermeture modale sur croix ou overlay + retour arriere
+
     const modalepop = document.querySelector('.modalePop');
     const modaleGallery = document.querySelector('.modale_gallery');
     const modaleWorks = document.querySelector('.modale_works');
@@ -214,9 +236,9 @@ function closeModale() {
 
     });
 }
-
+// Suppression des travaux via modale gallery
 function deleteWork() {
-    // Suppression des travaux via modale gallery
+
     const trash = document.querySelectorAll('.trash');
 
     trash.forEach((trash) => {
@@ -240,6 +262,101 @@ function deleteWork() {
 
         });
     });
+}
+
+let uploadedFile = null;
+
+// Ajout work via modale form works
+async function addWork() {
+    // Ajout d'une photo
+    const addPicture = document.querySelector('.addPicture');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+
+    addPicture.addEventListener('click', () => {
+
+        input.click();
+    });
+
+    input.addEventListener('change', (event) => {
+        const file = event.target.files?.[0];
+        const maxSize = 4 * 1024 * 1024
+        if (file.size > maxSize) {
+            event.target.value = '';
+            const errorP = document.querySelector('.picture p');
+            errorP.style.color = 'red';
+            return;
+        }
+        uploadedFile = file;
+        const picture = document.querySelector('.picture');
+        picture.innerHTML = '';
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const img = document.createElement('img');
+            img.src = reader.result;
+            picture.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+
+
+
+    // Erreur si valeur manquante
+    const form = document.querySelector('.addWorks');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const category = document.getElementById('category').value;
+        const picture = document.querySelector('.picture img');
+        const file = event.target.files?.[0];
+
+        if (!title || !category || !uploadedFile) {
+            const error = document.querySelector('.error');
+            error.classList.remove('hidden');
+            return
+        }
+        //envoie Api work
+        const token = localStorage.getItem('token');
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('category', category);
+        formData.append('image', uploadedFile);
+
+        const response = await fetch(apiUrl + 'works', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        if (response.ok) {
+            form.reset();
+            const error = document.querySelector('.error');
+            error.classList.add('hidden');
+            uploadedFile = null;
+        }
+
+
+    });
+
+
+    // modale form works category
+    const category = await getCategories();
+    const categorySelect = document.querySelector('.categorySelect');
+    category.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        categorySelect.appendChild(option);
+    });
+
+
+
 }
 
 
