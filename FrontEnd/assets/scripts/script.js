@@ -174,37 +174,9 @@ async function modale() {
     });
 
 
-    // Suppression des travaux via modale gallery
-    const trash = document.querySelectorAll('.trash');
-
-    trash.forEach((trash) => {
-        trash.addEventListener('click', async (event) => {
-
-            const figure = event.target.closest('figure');
-            const id = figure.dataset.id;
-            const token = localStorage.getItem('token');
-            const response = await fetch(apiUrl + 'works/' + id, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            figure.remove();
-            const works = document.querySelector('.works' + figure.dataset.id);
-            if (works) {
-                works.remove();
-            }
-
-        });
-    });
-
-
-
-
     modaleWorksCategory();
     closeModale();
-
+    deleteWork();
 }
 
 
@@ -243,7 +215,32 @@ function closeModale() {
     });
 }
 
+function deleteWork() {
+    // Suppression des travaux via modale gallery
+    const trash = document.querySelectorAll('.trash');
 
+    trash.forEach((trash) => {
+        trash.addEventListener('click', async (event) => {
+
+            const figure = event.target.closest('figure');
+            const id = figure.dataset.id;
+            const token = localStorage.getItem('token');
+            const response = await fetch(apiUrl + 'works/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            figure.remove();
+            const works = document.querySelector('.works' + figure.dataset.id);
+            if (works) {
+                works.remove();
+            }
+
+        });
+    });
+}
 
 
 
