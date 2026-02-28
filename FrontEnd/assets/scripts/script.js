@@ -72,9 +72,10 @@ async function displayWorks() {
         const img = document.createElement('img');
         const title = document.createElement('figcaption');
         figure.classList.add(work.categoryId);
-        figure.classList.add('works');
+        figure.classList.add('works' + work.id);
         img.src = work.imageUrl;
         img.alt = work.title;
+        figure.dataset.id = work.id;
         title.textContent = work.title;
         gallery.appendChild(figure);
         figure.appendChild(img);
@@ -152,34 +153,19 @@ async function modale() {
         const figure = document.createElement('figure');
         img.src = work.imageUrl;
         img.alt = work.title;
+        img.classList.add(work.id);
+        figure.dataset.id = work.id;
         img.classList.add('modaleImg');
         figure.appendChild(deleteIcon);
         figure.appendChild(img);
+        figure.classList.add('modaleCategory');
         galleryImg.appendChild(figure);
     });
 
-    // fermeture modale sur croix ou overlay + retour arriere
-    const modalepop = document.querySelector('.modalePop');
+
+    // affichage modale form works
     const modaleGallery = document.querySelector('.modale_gallery');
     const modaleWorks = document.querySelector('.modale_works');
-    const back = document.querySelector('.back');
-
-    modalepop.addEventListener('click', (event) => {
-
-        if (event.target === modalepop || event.target.closest('.close')) {
-            console.log(event.target);
-
-            modalepop.classList.remove('modale');
-            modalepop.classList.add('hidden');
-            modaleWorks.classList.remove('activeModale');
-        } // retour arriere
-        else if (event.target === back) {
-            modaleGallery.classList.add('activeModale');
-            modaleWorks.classList.remove('activeModale');
-        }
-
-    });
-    // affichage modale form works
     const addPicture = document.querySelector('.addPicture');
     addPicture.addEventListener('click', () => {
         modaleGallery.classList.remove('activeModale');
@@ -187,7 +173,37 @@ async function modale() {
         modaleWorks.classList.add('activeModale');
     });
 
+
+    // Suppression des travaux via modale gallery
+    const trash = document.querySelectorAll('.trash');
+
+    trash.forEach((trash) => {
+        trash.addEventListener('click', async (event) => {
+
+            const figure = event.target.closest('figure');
+            const id = figure.dataset.id;
+            const token = localStorage.getItem('token');
+            const response = await fetch(apiUrl + 'works/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            figure.remove();
+            const works = document.querySelector('.works' + figure.dataset.id);
+            if (works) {
+                works.remove();
+            }
+
+        });
+    });
+
+
+
+
     modaleWorksCategory();
+    closeModale();
 
 }
 
@@ -203,6 +219,30 @@ async function modaleWorksCategory() {
         categorySelect.appendChild(option);
     });
 }
+
+function closeModale() {
+    // fermeture modale sur croix ou overlay + retour arriere
+    const modalepop = document.querySelector('.modalePop');
+    const modaleGallery = document.querySelector('.modale_gallery');
+    const modaleWorks = document.querySelector('.modale_works');
+    const back = document.querySelector('.back');
+
+    modalepop.addEventListener('click', (event) => {
+
+        if (event.target === modalepop || event.target.closest('.close')) {
+
+            modalepop.classList.remove('modale');
+            modalepop.classList.add('hidden');
+            modaleWorks.classList.remove('activeModale');
+        } // retour arriere
+        else if (event.target === back) {
+            modaleGallery.classList.add('activeModale');
+            modaleWorks.classList.remove('activeModale');
+        }
+
+    });
+}
+
 
 
 
