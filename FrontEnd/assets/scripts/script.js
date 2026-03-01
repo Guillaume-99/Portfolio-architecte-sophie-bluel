@@ -1,6 +1,9 @@
 // appel API 
 const apiUrl = 'http://localhost:5678/api/';
 
+const imgWorks = `<i class="fa-regular fa-image"></i>
+             			<button class="addPicture">+ Ajouter une photo</button>
+             			<p>jpg, png : 4mo max</p>`
 
 // appel API categories pour conversion en json
 async function getCategories() {
@@ -189,19 +192,21 @@ function modaleFormWorks() {
     const modaleGallery = document.querySelector('.modale_gallery');
     const modaleWorks = document.querySelector('.modale_works');
     const formWorks = document.querySelector('.formWorks');
+    const picture = document.querySelector('.picture');
     formWorks.addEventListener('click', () => {
         modaleGallery.classList.remove('activeModale');
         modaleGallery.classList.add('hidden');
         modaleWorks.classList.add('activeModale');
+        picture.innerHTML = imgWorks;
     });
 
 
     // Boutton valider vert si remplie
     const title = document.getElementById('title').value;
     const category = document.getElementById('category').value;
-    const picture = document.querySelector('.picture img');
+    const pictureImg = document.querySelector('.picture img');
 
-    const isValide = title && category && picture;
+    const isValide = title && category && pictureImg;
     if (isValide) {
         let valider = document.getElementById('valider');
         valider.style.backgroundColor = '#306685';
@@ -220,6 +225,8 @@ function closeModale() {
     const modaleGallery = document.querySelector('.modale_gallery');
     const modaleWorks = document.querySelector('.modale_works');
     const back = document.querySelector('.back');
+    const addWorks = document.querySelector('.addWorks');
+    const picture = document.querySelector('.picture');
 
     modalepop.addEventListener('click', (event) => {
 
@@ -228,10 +235,14 @@ function closeModale() {
             modalepop.classList.remove('modale');
             modalepop.classList.add('hidden');
             modaleWorks.classList.remove('activeModale');
+            addWorks.reset();
+            picture.innerHTML = imgWorks;
         } // retour arriere
         else if (event.target === back) {
             modaleGallery.classList.add('activeModale');
             modaleWorks.classList.remove('activeModale');
+            addWorks.reset();
+            picture.innerHTML = imgWorks;
         }
 
     });
@@ -269,27 +280,28 @@ let uploadedFile = null;
 // Ajout work via modale form works
 async function addWork() {
     // Ajout d'une photo
-    const addPicture = document.querySelector('.addPicture');
+    const picture = document.querySelector('.picture');
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.style.display = 'none';
     document.body.appendChild(input);
 
-    addPicture.addEventListener('click', () => {
-
-        input.click();
+    picture.addEventListener('click', (e) => {
+        if (e.target.matches('.addPicture'))
+            input.click();
     });
 
     input.addEventListener('change', (event) => {
         const file = event.target.files?.[0];
         const maxSize = 4 * 1024 * 1024
-        if (file.size > maxSize) {
+        if (file.size > maxSize && file.size === 0 || file.type !== 'image/jpeg' && file.type !== 'image/png') {
             event.target.value = '';
             const errorP = document.querySelector('.picture p');
             errorP.style.color = 'red';
             return;
         }
+
         uploadedFile = file;
         const picture = document.querySelector('.picture');
         picture.innerHTML = '';
@@ -312,8 +324,9 @@ async function addWork() {
 
         const title = document.getElementById('title').value;
         const category = document.getElementById('category').value;
-        const picture = document.querySelector('.picture img');
-        const file = event.target.files?.[0];
+        const pictureImg = document.querySelector('.picture img');
+        const picture = document.querySelector('.picture');
+        const gallery = document.querySelector('.gallery');
 
         if (!title || !category || !uploadedFile) {
             const error = document.querySelector('.error');
@@ -339,22 +352,14 @@ async function addWork() {
             const error = document.querySelector('.error');
             error.classList.add('hidden');
             uploadedFile = null;
+            pictureImg.remove();
+            picture.innerHTML = imgWorks;
+            gallery.innerHTML = '';
+            displayWorks();
         }
 
 
     });
-
-
-    // modale form works category
-    const category = await getCategories();
-    const categorySelect = document.querySelector('.categorySelect');
-    category.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat.id;
-        option.textContent = cat.name;
-        categorySelect.appendChild(option);
-    });
-
 
 
 }
