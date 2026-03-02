@@ -121,14 +121,14 @@ async function checkLogin() {
     const form = document.querySelector('.login_page form');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
-    const login = document.querySelector('.login');
+    const loginPage = document.querySelector('.login');
     const loginLink = document.getElementById('login');
     const main = document.querySelector('main');
 
     if (loginLink) {
         loginLink.addEventListener('click', () => {
             main.classList.add('hidden');
-            login.classList.remove('hidden');
+            loginPage.classList.remove('hidden');
         });
     }
 
@@ -412,6 +412,7 @@ async function addWork() {
         const category = document.getElementById('category').value;
         const pictureImg = document.querySelector('.picture img');
         const picture = document.querySelector('.picture');
+        file = input.files[0];
         uploadedFile = file;
 
         // Erreur si champs vides
