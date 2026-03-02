@@ -144,24 +144,107 @@ async function admin() {
 
 
 
-// affichage des modales 
-function modale() {
+// fermeture modale sur croix ou overlay + retour arriere
+function closeModale() {
 
-    modaleGallery();
-    modaleFormWorks();
-    closeModale();
-    addWork();
+    const modalepop = document.querySelector('.modalePop');
+    const modaleGallery = document.querySelector('.modale_gallery');
+    const modaleWorks = document.querySelector('.modale_works');
+    const back = document.querySelector('.back');
+    const addWorks = document.querySelector('.addWorks');
+    const picture = document.querySelector('.picture');
 
+    modalepop.addEventListener('click', (event) => {
 
+        if (event.target === modalepop || event.target.closest('.close')) {
+
+            modalepop.classList.remove('modale');
+            modalepop.classList.add('hidden');
+            modaleWorks.classList.remove('activeModale');
+            addWorks.reset();
+            picture.innerHTML = imgWorks;
+        } // retour arriere
+        else if (event.target === back) {
+            modaleGallery.classList.add('activeModale');
+            modaleWorks.classList.remove('activeModale');
+            addWorks.reset();
+            picture.innerHTML = imgWorks;
+        }
+
+    });
 }
 
-//function modale form works
+// modale gallery avec suppression
+async function modaleGallery() {
+
+    const works = await getWorks();
+    const galleryImg = document.querySelector('.galleryImg');
+    galleryImg.innerHTML = '';
+
+
+    //Image pour modale gallery
+    works.forEach(work => {
+
+        const figure = document.createElement('figure');
+        const deleteIcon = document.createElement('i');
+        const img = document.createElement('img');
+
+        deleteIcon.className = 'fa-solid fa-trash-can trash';
+        img.src = work.imageUrl;
+        img.alt = work.title;
+        img.classList.add(work.id);
+        figure.dataset.id = work.id;
+        img.classList.add('modaleImg');
+        figure.appendChild(deleteIcon);
+        figure.appendChild(img);
+        figure.classList.add('modaleCategory');
+        galleryImg.appendChild(figure);
+    });
+
+    deleteWork();
+}
+
+// Suppression des travaux via modale gallery
+function deleteWork() {
+
+    const trash = document.querySelectorAll('.trash');
+
+    trash.forEach((trash) => {
+        trash.addEventListener('click', async (event) => {
+
+            const figure = event.target.closest('figure');
+            const id = figure.dataset.id;
+            const token = localStorage.getItem('token');
+            const works = document.querySelector('.works' + id);
+
+            const response = await fetch(apiUrl + 'works/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            figure.remove();
+
+            if (works) {
+                works.remove();
+            }
+
+        });
+    });
+}
+
+
+// Affichage modale form works
 async function modaleFormWorks() {
+
     // affichage modale form works
     const modaleGallery = document.querySelector('.modale_gallery');
     const modaleWorks = document.querySelector('.modale_works');
     const formWorks = document.querySelector('.formWorks');
     const picture = document.querySelector('.picture');
+
     formWorks.addEventListener('click', () => {
         modaleGallery.classList.remove('activeModale');
         modaleGallery.classList.add('hidden');
@@ -169,9 +252,10 @@ async function modaleFormWorks() {
         picture.innerHTML = imgWorks;
     });
 
-    // modale form works category
+    // modale form works category option déroulante
     const categories = await getCategories();
     const categorySelect = document.querySelector('.categorySelect');
+
     categories.forEach(cat => {
         const option = document.createElement('option');
         option.value = cat.id;
@@ -205,96 +289,9 @@ function updateValiderButton() {
     pictureContener.addEventListener('input', updateValiderButton);
 }
 
-
-
-// fermeture modale sur croix ou overlay + retour arriere
-function closeModale() {
-
-    const modalepop = document.querySelector('.modalePop');
-    const modaleGallery = document.querySelector('.modale_gallery');
-    const modaleWorks = document.querySelector('.modale_works');
-    const back = document.querySelector('.back');
-    const addWorks = document.querySelector('.addWorks');
-    const picture = document.querySelector('.picture');
-
-    modalepop.addEventListener('click', (event) => {
-
-        if (event.target === modalepop || event.target.closest('.close')) {
-
-            modalepop.classList.remove('modale');
-            modalepop.classList.add('hidden');
-            modaleWorks.classList.remove('activeModale');
-            addWorks.reset();
-            picture.innerHTML = imgWorks;
-        } // retour arriere
-        else if (event.target === back) {
-            modaleGallery.classList.add('activeModale');
-            modaleWorks.classList.remove('activeModale');
-            addWorks.reset();
-            picture.innerHTML = imgWorks;
-        }
-
-    });
-}
-// Suppression des travaux via modale gallery
-function deleteWork() {
-
-    const trash = document.querySelectorAll('.trash');
-
-    trash.forEach((trash) => {
-        trash.addEventListener('click', async (event) => {
-
-            const figure = event.target.closest('figure');
-            const id = figure.dataset.id;
-            const token = localStorage.getItem('token');
-            const response = await fetch(apiUrl + 'works/' + id, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            figure.remove();
-            const works = document.querySelector('.works' + figure.dataset.id);
-            if (works) {
-                works.remove();
-            }
-
-        });
-    });
-}
-
-// modale gallery 
-async function modaleGallery() {
-
-    const works = await getWorks();
-    const galleryImg = document.querySelector('.galleryImg');
-    galleryImg.innerHTML = '';
-
-
-    //Image pour modale gallery
-    works.forEach(work => {
-        const deleteIcon = document.createElement('i');
-        deleteIcon.className = 'fa-solid fa-trash-can trash';
-        const img = document.createElement('img');
-        const figure = document.createElement('figure');
-        img.src = work.imageUrl;
-        img.alt = work.title;
-        img.classList.add(work.id);
-        figure.dataset.id = work.id;
-        img.classList.add('modaleImg');
-        figure.appendChild(deleteIcon);
-        figure.appendChild(img);
-        figure.classList.add('modaleCategory');
-        galleryImg.appendChild(figure);
-    });
-
-    deleteWork();
-}
-
-
 // Ajout work via modale form works
 async function addWork() {
+
     // Ajout d'une photo
     const picture = document.querySelector('.picture');
     const input = document.createElement('input');
@@ -303,38 +300,44 @@ async function addWork() {
     input.style.display = 'none';
     document.body.appendChild(input);
 
+    // selection de la photo
     picture.addEventListener('click', (e) => {
         if (e.target.matches('.addPicture'))
             input.click();
     });
 
     input.addEventListener('change', (event) => {
+        // condition de la photo
         const file = event.target.files?.[0];
         const maxSize = 4 * 1024 * 1024
-        if (file.size > maxSize && file.size === 0 || file.type !== 'image/jpeg' && file.type !== 'image/png') {
+        if (file.size > maxSize || file.size === 0 || (file.type !== 'image/jpeg' && file.type !== 'image/png')) {
             event.target.value = '';
             const errorP = document.querySelector('.picture p');
             errorP.style.color = 'red';
             return;
         }
 
-        uploadedFile = file;
+        // Previsualisation de la photo
+
+
         const picture = document.querySelector('.picture');
         picture.innerHTML = '';
         const reader = new FileReader();
+
+        reader.readAsDataURL(file);
 
         reader.onload = () => {
             const img = document.createElement('img');
             img.src = reader.result;
             picture.appendChild(img);
         };
-        reader.readAsDataURL(file);
     });
 
 
 
-    // Erreur si valeur manquante
+    // Ecoute du submit du formulaire addWorks
     const form = document.querySelector('.addWorks');
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -342,13 +345,15 @@ async function addWork() {
         const category = document.getElementById('category').value;
         const pictureImg = document.querySelector('.picture img');
         const picture = document.querySelector('.picture');
-        const gallery = document.querySelector('.gallery');
+        uploadedFile = file;
 
+        // Erreur si champs vides
         if (!title || !category || !uploadedFile) {
             const error = document.querySelector('.error');
             error.classList.remove('hidden');
             return
         }
+
         //envoie Api work
         const token = localStorage.getItem('token');
         const formData = new FormData();
@@ -363,6 +368,8 @@ async function addWork() {
             },
             body: formData
         });
+
+        // reset du formulaire si ok + actualisation
         if (response.ok) {
             form.reset();
             const error = document.querySelector('.error');
@@ -373,14 +380,21 @@ async function addWork() {
             displayWorks();
             modaleGallery();
         }
-
-
     });
 
 
 }
 
+// affichage des modales 
+function modale() {
 
+    modaleGallery();
+    modaleFormWorks();
+    closeModale();
+    addWork();
+
+
+}
 
 
 
@@ -389,8 +403,9 @@ async function init() {
     displayCategories();
     // appel de la fonction d'affichage travaux
     displayWorks();
-
+    // appel de la fonction mode admin
     admin();
+    // appel des fonctions lié aux modales
     modale();
 }
 
