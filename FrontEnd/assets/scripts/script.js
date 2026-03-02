@@ -5,6 +5,9 @@ const imgWorks = `<i class="fa-regular fa-image"></i>
              			<button class="addPicture">+ Ajouter une photo</button>
              			<p>jpg, png : 4mo max</p>`
 
+
+let uploadedFile = null;
+
 // appel API categories pour conversion en json
 async function getCategories() {
     const response = await fetch(apiUrl + 'categories');
@@ -70,6 +73,7 @@ async function getWorks() {
 async function displayWorks() {
     const works = await getWorks();
     const gallery = document.querySelector('.gallery');
+    gallery.innerHTML = '';
     works.forEach(work => {
         const figure = document.createElement('figure');
         const img = document.createElement('img');
@@ -140,54 +144,19 @@ async function admin() {
 
 
 
-// affichage modale Gallery
-async function modale() {
+// affichage des modales 
+function modale() {
 
-    const works = await getWorks();
-    const galleryImg = document.querySelector('.galleryImg');
-
-
-
-    //Image pour modale gallery
-    works.forEach(work => {
-        const deleteIcon = document.createElement('i');
-        deleteIcon.className = 'fa-solid fa-trash-can trash';
-        const img = document.createElement('img');
-        const figure = document.createElement('figure');
-        img.src = work.imageUrl;
-        img.alt = work.title;
-        img.classList.add(work.id);
-        figure.dataset.id = work.id;
-        img.classList.add('modaleImg');
-        figure.appendChild(deleteIcon);
-        figure.appendChild(img);
-        figure.classList.add('modaleCategory');
-        galleryImg.appendChild(figure);
-    });
-
-    // modale form works category
-    const category = await getCategories();
-    const categorySelect = document.querySelector('.categorySelect');
-    category.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat.id;
-        option.textContent = cat.name;
-        categorySelect.appendChild(option);
-    });
-
-
-
+    modaleGallery();
     modaleFormWorks();
     closeModale();
-    deleteWork();
     addWork();
 
-    title.addEventListener('input', modaleFormWorks);
-    categorySelect.addEventListener('change', modaleFormWorks);
+
 }
 
 //function modale form works
-function modaleFormWorks() {
+async function modaleFormWorks() {
     // affichage modale form works
     const modaleGallery = document.querySelector('.modale_gallery');
     const modaleWorks = document.querySelector('.modale_works');
@@ -200,22 +169,42 @@ function modaleFormWorks() {
         picture.innerHTML = imgWorks;
     });
 
+    // modale form works category
+    const categories = await getCategories();
+    const categorySelect = document.querySelector('.categorySelect');
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        categorySelect.appendChild(option);
+    });
 
-    // Boutton valider vert si remplie
+    updateValiderButton();
+
+}
+
+// Bouton valider modale 
+function updateValiderButton() {
     const title = document.getElementById('title').value;
     const category = document.getElementById('category').value;
     const pictureImg = document.querySelector('.picture img');
 
     const isValide = title && category && pictureImg;
-    if (isValide) {
-        let valider = document.getElementById('valider');
-        valider.style.backgroundColor = '#306685';
-    } else {
-        let valider = document.getElementById('valider');
-        valider.style.backgroundColor = '#A7A7A7';
-    }
 
+    const valider = document.getElementById('valider');
+    valider.style.backgroundColor = isValide ? '#306685' : '#A7A7A7';
+    valider.style.cursor = isValide ? 'pointer' : 'not-allowed';
+
+    // Ecoute bouton si remplie
+    const titleInput = document.getElementById('title');
+    const categoryOption = document.getElementById('category');
+    const pictureContener = document.querySelector('.picture');
+
+    titleInput.addEventListener('input', updateValiderButton);
+    categoryOption.addEventListener('input', updateValiderButton);
+    pictureContener.addEventListener('input', updateValiderButton);
 }
+
 
 
 // fermeture modale sur croix ou overlay + retour arriere
@@ -275,7 +264,34 @@ function deleteWork() {
     });
 }
 
-let uploadedFile = null;
+// modale gallery 
+async function modaleGallery() {
+
+    const works = await getWorks();
+    const galleryImg = document.querySelector('.galleryImg');
+    galleryImg.innerHTML = '';
+
+
+    //Image pour modale gallery
+    works.forEach(work => {
+        const deleteIcon = document.createElement('i');
+        deleteIcon.className = 'fa-solid fa-trash-can trash';
+        const img = document.createElement('img');
+        const figure = document.createElement('figure');
+        img.src = work.imageUrl;
+        img.alt = work.title;
+        img.classList.add(work.id);
+        figure.dataset.id = work.id;
+        img.classList.add('modaleImg');
+        figure.appendChild(deleteIcon);
+        figure.appendChild(img);
+        figure.classList.add('modaleCategory');
+        galleryImg.appendChild(figure);
+    });
+
+    deleteWork();
+}
+
 
 // Ajout work via modale form works
 async function addWork() {
@@ -354,8 +370,8 @@ async function addWork() {
             uploadedFile = null;
             pictureImg.remove();
             picture.innerHTML = imgWorks;
-            gallery.innerHTML = '';
             displayWorks();
+            modaleGallery();
         }
 
 
