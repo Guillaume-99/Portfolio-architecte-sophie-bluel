@@ -90,6 +90,71 @@ async function displayWorks() {
     });
 }
 
+// Affichage Login
+
+// appel API login pour conversion en json avec msg erreur
+async function login(email, password) {
+
+    const response = await fetch(apiUrl + 'users/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+    });
+
+
+    if (!response.ok) {
+        const error = document.querySelector('span.hidden');
+        error.classList.remove('hidden');
+        return
+    }
+
+    const data = await response.json();
+    return data;
+
+}
+
+
+// Récupérer le formulaire et connecter avec token
+async function checkLogin() {
+    const form = document.querySelector('.login_page form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const login = document.querySelector('.login');
+    const loginLink = document.getElementById('login');
+    const main = document.querySelector('main');
+
+    if (loginLink) {
+        loginLink.addEventListener('click', () => {
+            main.classList.add('hidden');
+            login.classList.remove('hidden');
+        });
+    }
+
+
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const data = await login(email, password);
+
+        if (!data) {
+            return;
+        }
+
+        localStorage.setItem('token', data.token);
+        window.location.href = 'index.html';
+    });
+}
+
+
+
+
+
+
 
 
 // mode admin lorsque le token est donné
@@ -97,8 +162,10 @@ async function admin() {
     if (localStorage.getItem('token')) {
         // affichage du bouton logout
         const logout = `<a id="logout" href="index.html">logout</a>`;
-        const login = document.getElementById('login');
-        login.innerHTML = logout;
+        const loginLink = document.getElementById('login');
+        const login = document.querySelector('.login');
+        login.classList.add('hidden');
+        loginLink.innerHTML = logout;
 
         document.getElementById('logout').addEventListener('click', () => {
             localStorage.removeItem('token');
@@ -403,6 +470,8 @@ async function init() {
     displayCategories();
     // appel de la fonction d'affichage travaux
     displayWorks();
+    // appel de la fonction de check login
+    checkLogin();
     // appel de la fonction mode admin
     admin();
     // appel des fonctions lié aux modales
