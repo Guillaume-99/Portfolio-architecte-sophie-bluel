@@ -253,11 +253,13 @@ li:hover {
 /******************** Login ************************/
 
 
-#login {
+#login a {
 	cursor: pointer;
+	text-decoration: none;
+	color: black
 }
 
-#logout {
+#logout a {
 	cursor: pointer;
 	text-decoration: none;
 	color: black;
